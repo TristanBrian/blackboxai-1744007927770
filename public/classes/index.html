@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kindergarten Management - Classes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+  <div class="flex h-screen">
+    <!-- Sidebar (same as dashboard) -->
+    <div class="bg-blue-800 text-white w-64 flex flex-col">
+      <div class="p-4 flex items-center space-x-3 border-b border-blue-700">
+        <i class="fas fa-school text-2xl"></i>
+        <span class="text-xl font-semibold">Kindergarten</span>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <a href="/dashboard/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/students/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-child"></i>
+          <span>Students</span>
+        </a>
+        <a href="/teachers/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Teachers</span>
+        </a>
+        <a href="/classes/index.html" class="flex items-center space-x-3 p-2 rounded bg-blue-700">
+          <i class="fas fa-door-open"></i>
+          <span>Classes</span>
+        </a>
+        <a href="/attendance/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-clipboard-check"></i>
+          <span>Attendance</span>
+        </a>
+      </nav>
+      <div class="p-4 border-t border-blue-700">
+        <button id="logoutBtn" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700 w-full">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Class Management</h1>
+        <button id="addClassBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+          <i class="fas fa-plus mr-2"></i> Add Class
+        </button>
+      </header>
+
+      <main class="p-6">
+        <!-- Class Levels Navigation -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+          <div class="flex space-x-2 overflow-x-auto pb-2">
+            <button class="class-level-btn px-4 py-2 rounded-md bg-blue-100 text-blue-800 font-medium" data-level="all">
+              All Classes
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="PP1">
+              PP1
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="PP2">
+              PP2
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="PP3">
+              PP3
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 1">
+              Grade 1
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 2">
+              Grade 2
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 3">
+              Grade 3
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 4">
+              Grade 4
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 5">
+              Grade 5
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 6">
+              Grade 6
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 7">
+              Grade 7
+            </button>
+            <button class="class-level-btn px-4 py-2 rounded-md hover:bg-gray-100" data-level="Grade 8">
+              Grade 8
+            </button>
+          </div>
+        </div>
+
+        <!-- Classes Cards -->
+        <div id="classesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Class cards will be added here dynamically -->
+          <div class="text-center py-12 text-gray-500 col-span-3">
+            <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+            <p class="text-xl">Loading classes...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Add/Edit Class Modal -->
+  <div id="classModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 id="modalTitle" class="text-xl font-bold">Add New Class</h2>
+          <button id="closeModalBtn" class="text-gray-400 hover:text-gray-500">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <form id="classForm" class="space-y-4">
+          <input type="hidden" id="classId">
+          <div>
+            <label for="className" class="block text-sm font-medium text-gray-700">Class Name</label>
+            <select id="className" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Select Class</option>
+              <option>PP1</option>
+              <option>PP2</option>
+              <option>PP3</option>
+              <option>Grade 1</option>
+              <option>Grade 2</option>
+              <option>Grade 3</option>
+              <option>Grade 4</option>
+              <option>Grade 5</option>
+              <option>Grade 6</option>
+              <option>Grade 7</option>
+              <option>Grade 8</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="section" class="block text-sm font-medium text-gray-700">Section (if multiple)</label>
+            <input type="text" id="section"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="e.g., A, B, etc.">
+          </div>
+          
+          <div>
+            <label for="capacity" class="block text-sm font-medium text-gray-700">Capacity</label>
+            <input type="number" id="capacity" min="1" max="30" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          
+          <div>
+            <label for="teacher" class="block text-sm font-medium text-gray-700">Primary Teacher</label>
+            <select id="teacher" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Select Teacher</option>
+              <!-- Teachers will be populated dynamically -->
+            </select>
+          </div>
+          
+          <div>
+            <label for="roomNumber" class="block text-sm font-medium text-gray-700">Room Number</label>
+            <input type="text" id="roomNumber"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          
+          <div>
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" rows="2"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+          </div>
+          
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+              Save Class
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/auth/login.html';
+    }
+
+    // DOM elements
+    const modal = document.getElementById('classModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const classForm = document.getElementById('classForm');
+    const addClassBtn = document.getElementById('addClassBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const classesContainer = document.getElementById('classesContainer');
+    const classLevelBtns = document.querySelectorAll('.class-level-btn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Modal functions
+    function openModal(title = 'Add New Class', classData = null) {
+      modalTitle.textContent = title;
+      
+      // Populate teachers dropdown
+      const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+      const teacherSelect = document.getElementById('teacher');
+      teacherSelect.innerHTML = '<option value="">Select Teacher</option>' + 
+        teachers.map(t => `<option value="${t.id}">${t.name} (${t.subject})</option>`).join('');
+      
+      if (classData) {
+        // Populate form for editing
+        document.getElementById('classId').value = classData.id;
+        document.getElementById('className').value = classData.name;
+        document.getElementById('section').value = classData.section || '';
+        document.getElementById('capacity').value = classData.capacity;
+        document.getElementById('teacher').value = classData.teacherId;
+        document.getElementById('roomNumber').value = classData.roomNumber || '';
+        document.getElementById('description').value = classData.description || '';
+      } else {
+        // Reset form for adding new class
+        classForm.reset();
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+
+    // Event listeners
+    addClassBtn.addEventListener('click', () => openModal());
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/auth/login.html';
+    });
+
+    // Class level filter buttons
+    classLevelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        classLevelBtns.forEach(b => b.classList.remove('bg-blue-100', 'text-blue-800', 'font-medium'));
+        btn.classList.add('bg-blue-100', 'text-blue-800', 'font-medium');
+        loadClasses(btn.dataset.level);
+      });
+    });
+
+    // Form submission
+    classForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const classData = {
+        id: document.getElementById('classId').value || Date.now().toString(),
+        name: document.getElementById('className').value,
+        section: document.getElementById('section').value,
+        capacity: parseInt(document.getElementById('capacity').value),
+        teacherId: document.getElementById('teacher').value,
+        teacherName: document.getElementById('teacher').options[document.getElementById('teacher').selectedIndex].text,
+        roomNumber: document.getElementById('roomNumber').value,
+        description: document.getElementById('description').value,
+        students: [] // Will be populated from students data
+      };
+
+      // In a real app, we would send this to the backend API
+      // For now, we'll simulate saving to localStorage
+      let classes = JSON.parse(localStorage.getItem('classes') || '[]');
+      
+      if (classData.id) {
+        // Update existing class
+        const index = classes.findIndex(c => c.id === classData.id);
+        if (index !== -1) {
+          // Preserve existing students when updating
+          classData.students = classes[index].students || [];
+          classes[index] = classData;
+        }
+      } else {
+        // Add new class
+        classes.push(classData);
+      }
+      
+      localStorage.setItem('classes', JSON.stringify(classes));
+      closeModal();
+      loadClasses();
+    });
+
+    // Load classes function
+    function loadClasses(level = 'all') {
+      let classes = JSON.parse(localStorage.getItem('classes') || '[]');
+      const students = JSON.parse(localStorage.getItem('students') || '[]');
+      const teachers = JSON.parse(localStorage.getItem('teachers') || '[]');
+      
+      // Filter classes by level if specified
+      if (level !== 'all') {
+        classes = classes.filter(cls => cls.name === level);
+      }
+      
+      // Update student counts for each class
+      classes.forEach(cls => {
+        cls.studentCount = students.filter(s => s.class === cls.name).length;
+        cls.teacher = teachers.find(t => t.id === cls.teacherId) || {};
+      });
+      
+      // Render classes as cards
+      classesContainer.innerHTML = classes.length > 0 ? 
+        classes.map(cls => `
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-6">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-lg font-bold text-gray-800">${cls.name}${cls.section ? ` (${cls.section})` : ''}</h3>
+                  <p class="text-gray-600">${cls.roomNumber ? `Room ${cls.roomNumber}` : 'No room assigned'}</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-medium 
+                  ${cls.studentCount >= cls.capacity ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                  ${cls.studentCount}/${cls.capacity} students
+                </span>
+              </div>
+              
+              <div class="mt-4">
+                <div class="flex items-center space-x-3">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <i class="fas fa-chalkboard-teacher text-purple-500"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">${cls.teacher.name || 'No teacher assigned'}</p>
+                    <p class="text-sm text-gray-500">${cls.teacher.subject || ''}</p>
+                  </div>
+                </div>
+              </div>
+              
+              ${cls.description ? `
+                <div class="mt-4">
+                  <p class="text-sm text-gray-600">${cls.description}</p>
+                </div>
+              ` : ''}
+              
+              <div class="mt-6 flex justify-between items-center">
+                <button onclick="viewClassDetails('${cls.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  View Details
+                </button>
+                <div class="flex space-x-2">
+                  <button onclick="editClass('${cls.id}')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button onclick="deleteClass('${cls.id}')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('') : `
+          <div class="text-center py-12 text-gray-500 col-span-3">
+            <i class="fas fa-door-open text-3xl mb-4"></i>
+            <p class="text-xl">No classes found</p>
+            <p class="mt-2">Click "Add Class" to create a new class</p>
+          </div>
+        `;
+    }
+
+    // View class details function
+    window.viewClassDetails = function(id) {
+      const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+      const students = JSON.parse(localStorage.getItem('students') || '[]');
+      const classData = classes.find(c => c.id === id);
+      
+      if (classData) {
+        const classStudents = students.filter(s => s.class === classData.name);
+        
+        // Create a modal with class details
+        const modalContent = `
+          <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">${classData.name}${classData.section ? ` (${classData.section})` : ''} Details</h2>
+                <button onclick="document.getElementById('detailsModal').remove()" class="text-gray-400 hover:text-gray-500">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 class="text-lg font-medium text-gray-900 mb-2">Class Information</h3>
+                  <div class="space-y-2">
+                    <p><span class="font-medium">Room:</span> ${classData.roomNumber || 'Not assigned'}</p>
+                    <p><span class="font-medium">Capacity:</span> ${classData.studentCount || 0}/${classData.capacity}</p>
+                    <p><span class="font-medium">Teacher:</span> ${classData.teacherName || 'Not assigned'}</p>
+                    ${classData.description ? `
+                      <p><span class="font-medium">Description:</span> ${classData.description}</p>
+                    ` : ''}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 class="text-lg font-medium text-gray-900 mb-2">Students (${classStudents.length})</h3>
+                  <div class="max-h-60 overflow-y-auto">
+                    ${classStudents.length > 0 ? `
+                      <ul class="divide-y divide-gray-200">
+                        ${classStudents.map(student => `
+                          <li class="py-2">
+                            <div class="flex items-center space-x-3">
+                              <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-child text-blue-500 text-xs"></i>
+                              </div>
+                              <div>
+                                <p class="text-sm font-medium text-gray-900">${student.name}</p>
+                                <p class="text-xs text-gray-500">${student.gender}, Age ${calculateAge(student.dob)}</p>
+                              </div>
+                            </div>
+                          </li>
+                        `).join('')}
+                      </ul>
+                    ` : `
+                      <p class="text-sm text-gray-500">No students enrolled in this class</p>
+                    `}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-6 flex justify-end">
+                <button onclick="document.getElementById('detailsModal').remove()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        const modal = document.createElement('div');
+        modal.id = 'detailsModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center';
+        modal.innerHTML = modalContent;
+        document.body.appendChild(modal);
+      }
+    };
+
+    // Helper function to calculate age from date of birth
+    function calculateAge(dob) {
+      if (!dob) return '';
+      const birthDate = new Date(dob);
+      const diff = Date.now() - birthDate.getTime();
+      const ageDate = new Date(diff);
+      return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
+    // Edit and delete functions
+    window.editClass = function(id) {
+      const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+      const classData = classes.find(c => c.id === id);
+      if (classData) {
+        openModal('Edit Class', classData);
+      }
+    };
+
+    window.deleteClass = function(id) {
+      if (confirm('Are you sure you want to delete this class? This will unassign all students from this class.')) {
+        let classes = JSON.parse(localStorage.getItem('classes') || '[]');
+        classes = classes.filter(c => c.id !== id);
+        localStorage.setItem('classes', JSON.stringify(classes));
+        loadClasses();
+      }
+    };
+
+    // Initialize with some sample data if none exists
+    if (!localStorage.getItem('classes')) {
+      const sampleClasses = [
+        {
+          id: '1',
+          name: 'PP2',
+          capacity: 20,
+          teacherId: '1',
+          teacherName: 'Ms. Alice Johnson (Math)',
+          roomNumber: '101',
+          description: 'Pre-primary class for 4-5 year olds'
+        },
+        {
+          id: '2',
+          name: 'Grade 1',
+          section: 'A',
+          capacity: 25,
+          teacherId: '2',
+          teacherName: 'Mr. Bob Smith (Physical Education)',
+          roomNumber: '201',
+          description: 'First grade class'
+        }
+      ];
+      localStorage.setItem('classes', JSON.stringify(sampleClasses));
+    }
+
+    // Initial load
+    loadClasses();
+  </script>
+</body>
+</html>

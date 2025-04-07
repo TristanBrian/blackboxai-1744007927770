@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kindergarten Management - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .sidebar {
+      transition: all 0.3s;
+    }
+    .sidebar.collapsed {
+      width: 5rem;
+    }
+    .sidebar.collapsed .nav-text {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar bg-blue-800 text-white w-64 flex flex-col">
+      <div class="p-4 flex items-center space-x-3 border-b border-blue-700">
+        <i class="fas fa-school text-2xl"></i>
+        <span class="nav-text text-xl font-semibold">Kindergarten</span>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <a href="/dashboard/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-tachometer-alt"></i>
+          <span class="nav-text">Dashboard</span>
+        </a>
+        <a href="/students/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-child"></i>
+          <span class="nav-text">Students</span>
+        </a>
+        <a href="/teachers/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span class="nav-text">Teachers</span>
+        </a>
+        <a href="/classes/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-door-open"></i>
+          <span class="nav-text">Classes</span>
+        </a>
+        <a href="/attendance/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-clipboard-check"></i>
+          <span class="nav-text">Attendance</span>
+        </a>
+      </nav>
+      <div class="p-4 border-t border-blue-700">
+        <button id="logoutBtn" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700 w-full">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="nav-text">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <!-- Header -->
+      <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <div class="flex items-center space-x-4">
+          <span id="welcomeMessage" class="text-gray-600"></span>
+          <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <!-- Students Card -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500">Total Students</p>
+                <h2 id="totalStudents" class="text-3xl font-bold">0</h2>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fas fa-child text-blue-500 text-xl"></i>
+              </div>
+            </div>
+            <a href="/students/index.html" class="mt-4 inline-flex items-center text-blue-500 hover:text-blue-700">
+              View all <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+
+          <!-- Teachers Card -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500">Total Teachers</p>
+                <h2 id="totalTeachers" class="text-3xl font-bold">0</h2>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <i class="fas fa-chalkboard-teacher text-green-500 text-xl"></i>
+              </div>
+            </div>
+            <a href="/teachers/index.html" class="mt-4 inline-flex items-center text-blue-500 hover:text-blue-700">
+              View all <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+
+          <!-- Classes Card -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500">Active Classes</p>
+                <h2 id="totalClasses" class="text-3xl font-bold">0</h2>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <i class="fas fa-door-open text-purple-500 text-xl"></i>
+              </div>
+            </div>
+            <a href="/classes/index.html" class="mt-4 inline-flex items-center text-blue-500 hover:text-blue-700">
+              View all <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
+          <div id="recentActivity" class="space-y-4">
+            <!-- Activity items will be added here dynamically -->
+            <div class="text-center py-8 text-gray-400">
+              <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+              <p>Loading activities...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/auth/login.html';
+    }
+
+    // Set user info
+    const user = JSON.parse(localStorage.getItem('user'));
+    document.getElementById('welcomeMessage').textContent = `Welcome, ${user.email}`;
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/auth/login.html';
+    });
+
+    // Fetch dashboard data
+    async function fetchDashboardData() {
+      try {
+        const response = await fetch('/api/dashboard', {
+          headers: {
+            'x-access-token': token
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard data');
+        }
+
+        // In a real app, we would use the actual data from the response
+        // For now, we'll simulate some data
+        document.getElementById('totalStudents').textContent = '142';
+        document.getElementById('totalTeachers').textContent = '18';
+        document.getElementById('totalClasses').textContent = '11';
+
+        // Simulate recent activities
+        const activities = [
+          { icon: 'fas fa-child', color: 'text-blue-500', text: '5 new students enrolled in PP1' },
+          { icon: 'fas fa-clipboard-check', color: 'text-green-500', text: 'Morning attendance marked for all classes' },
+          { icon: 'fas fa-chalkboard-teacher', color: 'text-purple-500', text: 'Ms. Johnson assigned to Grade 2 Math' }
+        ];
+
+        const activityContainer = document.getElementById('recentActivity');
+        activityContainer.innerHTML = activities.map(activity => `
+          <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0 mt-1">
+              <i class="${activity.icon} ${activity.color}"></i>
+            </div>
+            <p>${activity.text}</p>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load dashboard data');
+      }
+    }
+
+    fetchDashboardData();
+  </script>
+</body>
+</html>

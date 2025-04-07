@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kindergarten Management - Students</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+  <div class="flex h-screen">
+    <!-- Sidebar (same as dashboard) -->
+    <div class="bg-blue-800 text-white w-64 flex flex-col">
+      <div class="p-4 flex items-center space-x-3 border-b border-blue-700">
+        <i class="fas fa-school text-2xl"></i>
+        <span class="text-xl font-semibold">Kindergarten</span>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <a href="/dashboard/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/students/index.html" class="flex items-center space-x-3 p-2 rounded bg-blue-700">
+          <i class="fas fa-child"></i>
+          <span>Students</span>
+        </a>
+        <a href="/teachers/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <span>Teachers</span>
+        </a>
+        <a href="/classes/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-door-open"></i>
+          <span>Classes</span>
+        </a>
+        <a href="/attendance/index.html" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700">
+          <i class="fas fa-clipboard-check"></i>
+          <span>Attendance</span>
+        </a>
+      </nav>
+      <div class="p-4 border-t border-blue-700">
+        <button id="logoutBtn" class="flex items-center space-x-3 p-2 rounded hover:bg-blue-700 w-full">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Student Management</h1>
+        <button id="addStudentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+          <i class="fas fa-plus mr-2"></i> Add Student
+        </button>
+      </header>
+
+      <main class="p-6">
+        <!-- Search and Filter -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search students..." 
+                  class="pl-10 block w-full border border-gray-300 rounded-md py-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Class Level</label>
+              <select id="classFilter" class="block w-full border border-gray-300 rounded-md py-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">All Classes</option>
+                <option>PP1</option>
+                <option>PP2</option>
+                <option>PP3</option>
+                <option>Grade 1</option>
+                <option>Grade 2</option>
+                <option>Grade 3</option>
+                <option>Grade 4</option>
+                <option>Grade 5</option>
+                <option>Grade 6</option>
+                <option>Grade 7</option>
+                <option>Grade 8</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button id="applyFilterBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full">
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Age
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Class
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Guardian
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
+                <!-- Student rows will be added here dynamically -->
+                <tr>
+                  <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-xl mb-2"></i>
+                    <p>Loading students...</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Add/Edit Student Modal -->
+  <div id="studentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 id="modalTitle" class="text-xl font-bold">Add New Student</h2>
+          <button id="closeModalBtn" class="text-gray-400 hover:text-gray-500">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <form id="studentForm" class="space-y-4">
+          <input type="hidden" id="studentId">
+          <div>
+            <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <input type="text" id="fullName" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+              <input type="date" id="dateOfBirth" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+              <select id="gender" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label for="classLevel" class="block text-sm font-medium text-gray-700">Class Level</label>
+            <select id="classLevel" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Select Class</option>
+              <option>PP1</option>
+              <option>PP2</option>
+              <option>PP3</option>
+              <option>Grade 1</option>
+              <option>Grade 2</option>
+              <option>Grade 3</option>
+              <option>Grade 4</option>
+              <option>Grade 5</option>
+              <option>Grade 6</option>
+              <option>Grade 7</option>
+              <option>Grade 8</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="guardianName" class="block text-sm font-medium text-gray-700">Guardian Name</label>
+            <input type="text" id="guardianName" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          
+          <div>
+            <label for="contactNumber" class="block text-sm font-medium text-gray-700">Contact Number</label>
+            <input type="tel" id="contactNumber" required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+            <textarea id="address" rows="2"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+          </div>
+          
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+              Save Student
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/auth/login.html';
+    }
+
+    // DOM elements
+    const modal = document.getElementById('studentModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const studentForm = document.getElementById('studentForm');
+    const addStudentBtn = document.getElementById('addStudentBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const studentsTableBody = document.getElementById('studentsTableBody');
+    const searchInput = document.getElementById('searchInput');
+    const classFilter = document.getElementById('classFilter');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Modal functions
+    function openModal(title = 'Add New Student', studentData = null) {
+      modalTitle.textContent = title;
+      
+      if (studentData) {
+        // Populate form for editing
+        document.getElementById('studentId').value = studentData.id;
+        document.getElementById('fullName').value = studentData.name;
+        document.getElementById('dateOfBirth').value = studentData.dob;
+        document.getElementById('gender').value = studentData.gender;
+        document.getElementById('classLevel').value = studentData.class;
+        document.getElementById('guardianName').value = studentData.guardian;
+        document.getElementById('contactNumber').value = studentData.contact;
+        document.getElementById('address').value = studentData.address;
+      } else {
+        // Reset form for adding new student
+        studentForm.reset();
+      }
+      
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+
+    // Event listeners
+    addStudentBtn.addEventListener('click', () => openModal());
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/auth/login.html';
+    });
+
+    // Form submission
+    studentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const studentData = {
+        id: document.getElementById('studentId').value || Date.now().toString(),
+        name: document.getElementById('fullName').value,
+        dob: document.getElementById('dateOfBirth').value,
+        gender: document.getElementById('gender').value,
+        class: document.getElementById('classLevel').value,
+        guardian: document.getElementById('guardianName').value,
+        contact: document.getElementById('contactNumber').value,
+        address: document.getElementById('address').value
+      };
+
+      // In a real app, we would send this to the backend API
+      // For now, we'll simulate saving to localStorage
+      let students = JSON.parse(localStorage.getItem('students') || '[]');
+      
+      if (studentData.id) {
+        // Update existing student
+        const index = students.findIndex(s => s.id === studentData.id);
+        if (index !== -1) {
+          students[index] = studentData;
+        }
+      } else {
+        // Add new student
+        students.push(studentData);
+      }
+      
+      localStorage.setItem('students', JSON.stringify(students));
+      closeModal();
+      loadStudents();
+    });
+
+    // Load students function
+    function loadStudents(searchTerm = '', classLevel = '') {
+      let students = JSON.parse(localStorage.getItem('students') || '[]');
+      
+      // Filter students based on search and class level
+      if (searchTerm) {
+        students = students.filter(student => 
+          student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.guardian.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      
+      if (classLevel) {
+        students = students.filter(student => student.class === classLevel);
+      }
+      
+      // Render students table
+      studentsTableBody.innerHTML = students.length > 0 ? 
+        students.map(student => `
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                  <i class="fas fa-child text-blue-500"></i>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">${student.name}</div>
+                  <div class="text-sm text-gray-500">${student.gender}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">${calculateAge(student.dob)}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                ${student.class}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${student.guardian}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${student.contact}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button onclick="editStudent('${student.id}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteStudent('${student.id}')" class="text-red-600 hover:text-red-900">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('') : `
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+              No students found
+            </td>
+          </tr>
+        `;
+    }
+
+    // Helper function to calculate age from date of birth
+    function calculateAge(dob) {
+      if (!dob) return '';
+      const birthDate = new Date(dob);
+      const diff = Date.now() - birthDate.getTime();
+      const ageDate = new Date(diff);
+      return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
+    // Edit and delete functions
+    window.editStudent = function(id) {
+      const students = JSON.parse(localStorage.getItem('students') || '[]');
+      const student = students.find(s => s.id === id);
+      if (student) {
+        openModal('Edit Student', student);
+      }
+    };
+
+    window.deleteStudent = function(id) {
+      if (confirm('Are you sure you want to delete this student?')) {
+        let students = JSON.parse(localStorage.getItem('students') || '[]');
+        students = students.filter(s => s.id !== id);
+        localStorage.setItem('students', JSON.stringify(students));
+        loadStudents();
+      }
+    };
+
+    // Search and filter functionality
+    applyFilterBtn.addEventListener('click', () => {
+      loadStudents(searchInput.value, classFilter.value);
+    });
+
+    searchInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        loadStudents(searchInput.value, classFilter.value);
+      }
+    });
+
+    // Initialize with some sample data if none exists
+    if (!localStorage.getItem('students')) {
+      const sampleStudents = [
+        {
+          id: '1',
+          name: 'Emma Johnson',
+          dob: '2018-05-12',
+          gender: 'Female',
+          class: 'PP2',
+          guardian: 'John Johnson',
+          contact: '555-123-4567',
+          address: '123 Main St, Anytown'
+        },
+        {
+          id: '2',
+          name: 'Liam Smith',
+          dob: '2017-11-03',
+          gender: 'Male',
+          class: 'PP3',
+          guardian: 'Sarah Smith',
+          contact: '555-987-6543',
+          address: '456 Oak Ave, Somewhere'
+        }
+      ];
+      localStorage.setItem('students', JSON.stringify(sampleStudents));
+    }
+
+    // Initial load
+    loadStudents();
+  </script>
+</body>
+</html>
